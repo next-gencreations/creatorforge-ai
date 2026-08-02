@@ -126,6 +126,71 @@ def analyze_thumbnail(image_data: str, media_type: str, video_topic: str | None 
     return json.loads(text)
 
 
+CLIPS_SYSTEM_PROMPT = (
+    "You are the AI Clip Generator inside CreatorForge AI. Given a video transcript, identify "
+    "the moments most likely to work as standalone short-form clips (TikTok, YouTube Shorts, "
+    "Instagram/Facebook Reels): strong hooks, punchlines, surprising claims, emotional peaks, "
+    "quotable lines, or self-contained actionable tips. For each candidate, quote the exact "
+    "text from the transcript verbatim, briefly explain why it would grab attention, suggest "
+    "a short clip title, and write a punchy platform caption with 2-4 relevant hashtags. If "
+    "the transcript includes timing markers (e.g. 'mm:ss' or SRT-style cues), extract the "
+    "approximate timestamp range for that quote as timestamp_hint; if the transcript has no "
+    "timing information, set timestamp_hint to null — never invent a timestamp. Give each "
+    "candidate a shareability score from 0-100 reflecting your qualitative assessment of "
+    "standalone appeal — this is an AI estimate, not a prediction of real view counts, "
+    "engagement, or platform algorithm behaviour. Return 3-6 candidates ordered by score "
+    "descending."
+)
+
+CLIPS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "clips": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "quote": {"type": "string"},
+                    "timestamp_hint": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+                    "reason": {"type": "string"},
+                    "suggested_title": {"type": "string"},
+                    "platform_caption": {"type": "string"},
+                    "score": {"type": "number"},
+                },
+                "required": ["quote", "timestamp_hint", "reason", "suggested_title", "platform_caption", "score"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    "required": ["clips"],
+    "additionalProperties": False,
+}
+
+
+def find_viral_clips(transcript: str) -> list[dict]:
+    client = _get_client()
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=3072,
+        system=CLIPS_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": CLIPS_SCHEMA},
+        },
+        messages=[{"role": "user", "content": f"Transcript:\n{transcript}"}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    clips = json.loads(text)["clips"]
+    if not clips:
+        raise RuntimeError("The model returned no clip candidates.")
+    return clips
+
+
 CAPTIONS_SYSTEM_PROMPT = (
     "You are the AI Caption Generator inside CreatorForge AI. Given a video transcript or "
     "script, split it into caption cues suitable for on-screen subtitles: each cue at most 2 "

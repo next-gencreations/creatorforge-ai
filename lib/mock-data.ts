@@ -48,12 +48,6 @@ export const scriptTemplates = [
   { id: 4, name: "Sponsor Read", description: "Natural transition into a sponsor segment." },
 ];
 
-export const clipCandidates = [
-  { id: 1, timestamp: "04:12 – 04:48", score: 92, reason: "High energy spike + laughter detected" },
-  { id: 2, timestamp: "11:03 – 11:35", score: 87, reason: "Punchline delivery with audience reaction" },
-  { id: 3, timestamp: "18:47 – 19:20", score: 79, reason: "Strong quote, likely to be quoted in comments" },
-];
-
 export const publishingPlatforms = [
   { name: "YouTube", connected: true },
   { name: "TikTok", connected: true },

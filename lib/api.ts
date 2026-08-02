@@ -93,6 +93,15 @@ export interface CaptionResult {
   srt: string;
 }
 
+export interface ClipCandidate {
+  quote: string;
+  timestamp_hint: string | null;
+  reason: string;
+  suggested_title: string;
+  platform_caption: string;
+  score: number;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -119,6 +128,8 @@ export const api = {
     request<SeoMetadata>("/seo/generate", { method: "POST", body: JSON.stringify(data) }),
   generateCaptions: (data: { transcript: string; language?: string; emoji?: boolean }) =>
     request<CaptionResult>("/captions/generate", { method: "POST", body: JSON.stringify(data) }),
+  generateClips: (data: { transcript: string }) =>
+    request<{ clips: ClipCandidate[] }>("/clips/generate", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };
