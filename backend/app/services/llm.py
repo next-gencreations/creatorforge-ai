@@ -126,6 +126,57 @@ def analyze_thumbnail(image_data: str, media_type: str, video_topic: str | None 
     return json.loads(text)
 
 
+CAPTIONS_SYSTEM_PROMPT = (
+    "You are the AI Caption Generator inside CreatorForge AI. Given a video transcript or "
+    "script, split it into caption cues suitable for on-screen subtitles: each cue at most 2 "
+    "lines, at most roughly 42 characters per line, breaking at natural phrase boundaries — "
+    "never mid-word. Preserve the original meaning and tone exactly; do not summarise or add "
+    "commentary. If a target caption language is given that differs from the transcript's "
+    "language, translate naturally and idiomatically rather than word-for-word. If emoji "
+    "style is requested, add a relevant emoji to some cues where it fits naturally — don't "
+    "force one onto every line. Return the cues in order, covering the entire transcript."
+)
+
+CAPTIONS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "cues": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["cues"],
+    "additionalProperties": False,
+}
+
+
+def generate_caption_cues(transcript: str, language: str, emoji: bool) -> list[str]:
+    client = _get_client()
+    user_text = f"Transcript:\n{transcript}\n\nTarget caption language: {language}."
+    user_text += (
+        " Style: emoji captions — naturally weave in relevant emoji where it fits."
+        if emoji
+        else " Style: classic subtitles — plain text, no emoji."
+    )
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=4096,
+        system=CAPTIONS_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": CAPTIONS_SCHEMA},
+        },
+        messages=[{"role": "user", "content": user_text}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    cues = json.loads(text)["cues"]
+    if not cues:
+        raise RuntimeError("The model returned no caption cues.")
+    return cues
+
+
 SEO_SYSTEM_PROMPT = (
     "You are the AI SEO Engine inside CreatorForge AI. Given a video topic, outline or "
     "transcript excerpt, generate ready-to-publish YouTube SEO metadata: an optimised title "
