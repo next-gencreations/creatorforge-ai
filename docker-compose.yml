@@ -25,6 +25,8 @@ services:
       DATABASE_URL: postgresql://creatorforge:creatorforge@db:5432/creatorforge
       JWT_SECRET: dev-secret-change-me
       CORS_ORIGINS: '["http://localhost:3000"]'
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-5}
     ports:
       - "8000:8000"
     depends_on:
