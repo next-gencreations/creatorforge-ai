@@ -81,6 +81,18 @@ export interface SeoMetadata {
   assessment: string;
 }
 
+export interface CaptionCue {
+  index: number;
+  start: number;
+  end: number;
+  text: string;
+}
+
+export interface CaptionResult {
+  cues: CaptionCue[];
+  srt: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -105,6 +117,8 @@ export const api = {
     request<ThumbnailAnalysis>("/thumbnails/analyze", { method: "POST", body: JSON.stringify(data) }),
   generateSeo: (data: { topic: string; existing_title?: string }) =>
     request<SeoMetadata>("/seo/generate", { method: "POST", body: JSON.stringify(data) }),
+  generateCaptions: (data: { transcript: string; language?: string; emoji?: boolean }) =>
+    request<CaptionResult>("/captions/generate", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };
