@@ -124,3 +124,56 @@ def analyze_thumbnail(image_data: str, media_type: str, video_topic: str | None 
 
     text = "".join(block.text for block in response.content if block.type == "text")
     return json.loads(text)
+
+
+SEO_SYSTEM_PROMPT = (
+    "You are the AI SEO Engine inside CreatorForge AI. Given a video topic, outline or "
+    "transcript excerpt, generate ready-to-publish YouTube SEO metadata: an optimised title "
+    "(under 70 characters), a keyword-rich description (2-4 short paragraphs, first line "
+    "must hook the reader since it shows in search results), 10-15 tags, 3-5 hashtags "
+    "(with #), a suggested chapter/section structure (labels only, no timestamps — the "
+    "creator will time these), 5-8 keyword_focus phrases the content should target, and a "
+    "short assessment of the optimisation choices you made. This is model-generated "
+    "guidance based on general SEO best practice, not live search data — never invent "
+    "specific search volumes, rankings, or competitor statistics; if asked about those, "
+    "say so plainly in the assessment instead of making up numbers."
+)
+
+SEO_METADATA_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "title": {"type": "string"},
+        "description": {"type": "string"},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "hashtags": {"type": "array", "items": {"type": "string"}},
+        "chapters": {"type": "array", "items": {"type": "string"}},
+        "keyword_focus": {"type": "array", "items": {"type": "string"}},
+        "assessment": {"type": "string"},
+    },
+    "required": ["title", "description", "tags", "hashtags", "chapters", "keyword_focus", "assessment"],
+    "additionalProperties": False,
+}
+
+
+def generate_seo_metadata(topic: str, existing_title: str | None = None) -> dict:
+    client = _get_client()
+    user_text = f"Video topic / outline:\n{topic}"
+    if existing_title:
+        user_text += f"\n\nCurrent working title (optimise or improve on this if useful): {existing_title}"
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=2048,
+        system=SEO_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": SEO_METADATA_SCHEMA},
+        },
+        messages=[{"role": "user", "content": user_text}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    return json.loads(text)

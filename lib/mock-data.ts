@@ -48,13 +48,6 @@ export const scriptTemplates = [
   { id: 4, name: "Sponsor Read", description: "Natural transition into a sponsor segment." },
 ];
 
-export const seoKeywords = [
-  { keyword: "ai video editor", volume: "22K", difficulty: "Medium", trend: "up" },
-  { keyword: "youtube shorts editing", volume: "48K", difficulty: "High", trend: "up" },
-  { keyword: "content creator tools", volume: "9.1K", difficulty: "Low", trend: "flat" },
-  { keyword: "auto captions", volume: "31K", difficulty: "Medium", trend: "up" },
-];
-
 export const clipCandidates = [
   { id: 1, timestamp: "04:12 – 04:48", score: 92, reason: "High energy spike + laughter detected" },
   { id: 2, timestamp: "11:03 – 11:35", score: 87, reason: "Punchline delivery with audience reaction" },
