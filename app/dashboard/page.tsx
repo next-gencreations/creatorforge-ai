@@ -8,7 +8,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { api, type Project } from "@/lib/api";
-import { analyticsOverview, growthCoachTips, uploadSchedule } from "@/lib/mock-data";
+import { analyticsOverview, uploadSchedule } from "@/lib/mock-data";
 
 const statusTone: Record<Project["status"], "default" | "success" | "warning" | "brand"> = {
   draft: "default",
@@ -103,16 +103,15 @@ export default function DashboardOverview() {
 
       <Card className="mt-6">
         <CardHeader>
-          <h2 className="font-semibold text-zinc-900 dark:text-white">AI Growth Coach highlights</h2>
+          <h2 className="font-semibold text-zinc-900 dark:text-white">AI Growth Coach</h2>
         </CardHeader>
-        <CardBody className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {growthCoachTips.slice(0, 4).map((tip) => (
-            <div key={tip.title} className="rounded-xl border border-zinc-100 p-4 dark:border-zinc-800">
-              <Badge tone="brand">{tip.tag}</Badge>
-              <p className="mt-2 text-sm font-medium text-zinc-900 dark:text-white">{tip.title}</p>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{tip.detail}</p>
-            </div>
-          ))}
+        <CardBody className="flex flex-col items-center gap-2 py-8 text-center">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Tell your coach what's going on with your channel and get tailored content ideas and priorities.
+          </p>
+          <Link href="/dashboard/growth-coach" className="text-sm font-medium text-brand-600 hover:text-brand-700">
+            Get advice →
+          </Link>
         </CardBody>
       </Card>
     </div>

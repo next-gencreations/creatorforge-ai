@@ -354,3 +354,51 @@ def optimize_for_platforms(content: str, platforms: list[str]) -> list[dict]:
     if not versions:
         raise RuntimeError("The model returned no platform versions.")
     return versions
+
+
+GROWTH_COACH_SYSTEM_PROMPT = (
+    "You are the AI Growth Coach inside CreatorForge AI — a personal YouTube/content "
+    "strategist. The creator will describe their channel: niche, recent video topics, what's "
+    "working, what isn't, and any questions they have. Give tailored, actionable coaching: a "
+    "short diagnosis of what's likely helping or hurting based specifically on what they "
+    "described (not generic platitudes), 5-8 concrete content ideas tailored to their niche, "
+    "3-5 prioritised next actions, and one general best-practice note on upload timing. You do "
+    "not have access to their real analytics, live trend data, or competitor data — never "
+    "invent specific numbers (view counts, percentages, competitor stats, exact best-time-to-"
+    "post data); ground every recommendation in what the creator actually told you or in "
+    "general, well-known platform best practice, and say so plainly if a claim would need "
+    "analytics access CreatorForge doesn't have."
+)
+
+GROWTH_COACH_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "diagnosis": {"type": "string"},
+        "content_ideas": {"type": "array", "items": {"type": "string"}},
+        "priorities": {"type": "array", "items": {"type": "string"}},
+        "upload_timing_tip": {"type": "string"},
+    },
+    "required": ["diagnosis", "content_ideas", "priorities", "upload_timing_tip"],
+    "additionalProperties": False,
+}
+
+
+def get_growth_coach_advice(context: str) -> dict:
+    client = _get_client()
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=2048,
+        system=GROWTH_COACH_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": GROWTH_COACH_SCHEMA},
+        },
+        messages=[{"role": "user", "content": context}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    return json.loads(text)

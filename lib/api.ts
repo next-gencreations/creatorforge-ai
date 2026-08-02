@@ -112,6 +112,13 @@ export interface PlatformVersion {
   notes: string;
 }
 
+export interface GrowthCoachAdvice {
+  diagnosis: string;
+  content_ideas: string[];
+  priorities: string[];
+  upload_timing_tip: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -142,6 +149,8 @@ export const api = {
     request<{ clips: ClipCandidate[] }>("/clips/generate", { method: "POST", body: JSON.stringify(data) }),
   optimizeForPlatforms: (data: { content: string; platforms: string[] }) =>
     request<{ versions: PlatformVersion[] }>("/publishing/optimize", { method: "POST", body: JSON.stringify(data) }),
+  getGrowthCoachAdvice: (data: { context: string }) =>
+    request<GrowthCoachAdvice>("/growth-coach/advise", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };
