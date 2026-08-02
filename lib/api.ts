@@ -71,6 +71,16 @@ export interface ThumbnailAnalysis {
   title_suggestions: string[];
 }
 
+export interface SeoMetadata {
+  title: string;
+  description: string;
+  tags: string[];
+  hashtags: string[];
+  chapters: string[];
+  keyword_focus: string[];
+  assessment: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -93,6 +103,8 @@ export const api = {
     request<{ content: string }>("/scripts/generate", { method: "POST", body: JSON.stringify(data) }),
   analyzeThumbnail: (data: { image_data: string; media_type: string; video_topic?: string }) =>
     request<ThumbnailAnalysis>("/thumbnails/analyze", { method: "POST", body: JSON.stringify(data) }),
+  generateSeo: (data: { topic: string; existing_title?: string }) =>
+    request<SeoMetadata>("/seo/generate", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };
