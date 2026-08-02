@@ -22,7 +22,7 @@ docker compose up --build
 
 Starts Postgres and the API at `http://localhost:8000`. See [`backend/README.md`](backend/README.md) for running without Docker.
 
-The AI Script Assistant, the AI Thumbnail Creator's CTR analysis, the AI SEO Engine, the AI Caption Generator, and the AI Clip Generator need a real Anthropic API key — set `ANTHROPIC_API_KEY` in `backend/.env` (or export it before `docker compose up`). Without it, those features return a 503; everything else works.
+The AI Script Assistant, the AI Thumbnail Creator's CTR analysis, the AI SEO Engine, the AI Caption Generator, the AI Clip Generator, and the AI Publishing Hub's format optimizer need a real Anthropic API key — set `ANTHROPIC_API_KEY` in `backend/.env` (or export it before `docker compose up`). Without it, those features return a 503; everything else works.
 
 ### 2. Frontend
 
@@ -46,7 +46,7 @@ Visit `http://localhost:3000`, sign up, and you'll land in the dashboard.
 | AI SEO Engine | Live metadata generation (Claude API — title/description/tags/hashtags/chapters/keywords); no live trends or ranking data |
 | AI Caption Generator | Live (Claude API) — transcript to timed, translatable caption cues + .srt export; no audio/video transcription |
 | AI Clip Generator | Live (Claude API) — transcript to ranked, quotable clip candidates + platform captions; no audio/video analysis |
-| AI Publishing Hub | UI shell, mock data |
+| AI Publishing Hub | Live format optimization (Claude API) — one piece of content adapted per platform; no real OAuth/upload/scheduling yet |
 | Creator Dashboard / Analytics | UI shell, mock data |
 | AI Growth Coach | UI shell, mock data |
 | Brand Kit | UI shell, mock data |

@@ -293,3 +293,64 @@ def generate_seo_metadata(topic: str, existing_title: str | None = None) -> dict
 
     text = "".join(block.text for block in response.content if block.type == "text")
     return json.loads(text)
+
+
+PUBLISHING_SYSTEM_PROMPT = (
+    "You are the AI Publishing Hub inside CreatorForge AI. Given one piece of source content "
+    "(a video title/description or a caption) and a list of target platforms, adapt it into a "
+    "tailored version for each platform, respecting that platform's real conventions: "
+    "YouTube — an SEO-friendly title plus a longer description; TikTok — a short, casual "
+    "caption under roughly 150 characters with a few trending-style hashtags; Instagram — a "
+    "caption with a warmer tone and hashtags at the end; Facebook — a slightly longer, "
+    "conversational post; X — must fit within 280 characters total including hashtags, 1-2 "
+    "hashtags max; LinkedIn — a professional tone, minimal emoji, can run longer; Pinterest — "
+    "a keyword-rich pin description under 500 characters; Twitch — a short, hype panel/stream "
+    "title style. For each platform, also give a one-sentence note on what you adapted and "
+    "why. Return exactly one entry per requested platform, in the same order given."
+)
+
+PUBLISHING_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "versions": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "platform": {"type": "string"},
+                    "text": {"type": "string"},
+                    "notes": {"type": "string"},
+                },
+                "required": ["platform", "text", "notes"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    "required": ["versions"],
+    "additionalProperties": False,
+}
+
+
+def optimize_for_platforms(content: str, platforms: list[str]) -> list[dict]:
+    client = _get_client()
+    user_text = f"Source content:\n{content}\n\nTarget platforms: {', '.join(platforms)}."
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=2048,
+        system=PUBLISHING_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": PUBLISHING_SCHEMA},
+        },
+        messages=[{"role": "user", "content": user_text}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    versions = json.loads(text)["versions"]
+    if not versions:
+        raise RuntimeError("The model returned no platform versions.")
+    return versions
