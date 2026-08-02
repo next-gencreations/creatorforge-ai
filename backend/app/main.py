@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, captions, projects, scripts, seo, thumbnails
+from app.api.routes import auth, captions, clips, projects, scripts, seo, thumbnails
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
@@ -34,3 +34,4 @@ app.include_router(scripts.router)
 app.include_router(thumbnails.router)
 app.include_router(seo.router)
 app.include_router(captions.router)
+app.include_router(clips.router)
