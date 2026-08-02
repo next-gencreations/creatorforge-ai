@@ -180,6 +180,29 @@ export interface RevenueReport {
   report: string;
 }
 
+export const MAX_STORAGE_UPLOAD_BYTES = 25 * 1024 * 1024;
+
+export interface StorageFile {
+  id: number;
+  filename: string;
+  folder: string;
+  content_type: string;
+  size_bytes: number;
+  created_at: string;
+}
+
+export interface StorageFolderSummary {
+  folder: string;
+  item_count: number;
+  total_bytes: number;
+}
+
+export interface StorageSummary {
+  folders: StorageFolderSummary[];
+  used_bytes: number;
+  quota_bytes: number;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -231,6 +254,25 @@ export const api = {
   deleteIncome: (id: number) => request<void>(`/income/${id}`, { method: "DELETE" }),
   getRevenueSummary: () => request<RevenueSummary>("/revenue/summary"),
   generateRevenueReport: () => request<RevenueReport>("/revenue/report", { method: "POST" }),
+  listStorageFiles: () => request<StorageFile[]>("/storage/files"),
+  uploadStorageFile: (data: { filename: string; content_type: string; folder?: string; file_data: string }) =>
+    request<StorageFile>("/storage/files", { method: "POST", body: JSON.stringify(data) }),
+  deleteStorageFile: (id: number) => request<void>(`/storage/files/${id}`, { method: "DELETE" }),
+  getStorageSummary: () => request<StorageSummary>("/storage/summary"),
+  downloadStorageFile: async (id: number, filename: string) => {
+    const token = getToken();
+    const res = await fetch(`${API_URL}/storage/files/${id}/download`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) throw new ApiError("Could not download this file.", res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 };
 
 export { API_URL };

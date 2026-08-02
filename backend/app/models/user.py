@@ -20,3 +20,4 @@ class User(Base):
     ideas: Mapped[list["Idea"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
     sponsors: Mapped[list["Sponsor"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
     income_entries: Mapped[list["IncomeEntry"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
+    storage_files: Mapped[list["StorageFile"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
