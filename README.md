@@ -56,6 +56,6 @@ Visit `http://localhost:3000`, sign up, and you'll land in the dashboard.
 | Comment Manager | Live (Claude API) — real sentiment/spam classification + AI reply drafts on pasted comments; no platform connections |
 | Sponsor Manager | Live (Postgres-backed CRUD) — track real deals/deadlines/payments, generate a real report (Claude API) from your actual data |
 | Revenue Dashboard | Live (Postgres-backed income log) — manual income entries plus automatic Sponsorships stream from Paid sponsor deals, real aggregated breakdown, generate a real report (Claude API) from your actual data |
-| Cloud Storage | UI shell, mock data |
+| Cloud Storage | Live (Postgres-backed file records + real uploads/downloads stored on the backend server's disk) — real per-folder breakdown and quota; not backed by a third-party cloud provider (S3, GCS, etc.) |
 
 ## More coming soon...

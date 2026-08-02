@@ -29,9 +29,12 @@ services:
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-5}
     ports:
       - "8000:8000"
+    volumes:
+      - storage_uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   db_data:
+  storage_uploads:

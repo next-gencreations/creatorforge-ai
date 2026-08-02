@@ -13,5 +13,8 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-opus-5"
 
+    storage_root: str = "uploads"
+    storage_quota_bytes: int = 5 * 1024 * 1024 * 1024
+
 
 settings = Settings()
