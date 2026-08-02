@@ -32,13 +32,6 @@ export const calendarItems = [
   { date: "Aug 11", title: "Behind the Scenes", platform: "Instagram", status: "scheduled" },
 ];
 
-export const ideaVaultItems = [
-  { id: 1, source: "Reddit", idea: "React to worst AI editing fails compilation" },
-  { id: 2, source: "Comments", idea: "\"Can you do a full studio setup tour?\"" },
-  { id: 3, source: "Trending Search", idea: "How creators are using AI dubbing for global audiences" },
-  { id: 4, source: "Voice Memo", idea: "Day-in-the-life as a full time YouTuber" },
-];
-
 export const comments = [
   { id: 1, platform: "YouTube", author: "@mikefilms", text: "This edit is insane, what software?!", sentiment: "positive" },
   { id: 2, platform: "TikTok", author: "@sarah.codes", text: "Can you do a tutorial on the transitions?", sentiment: "positive" },

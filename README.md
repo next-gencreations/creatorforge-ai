@@ -52,7 +52,7 @@ Visit `http://localhost:3000`, sign up, and you'll land in the dashboard.
 | Brand Kit | UI shell, mock data |
 | AI Audio Studio | UI shell, mock data |
 | Content Calendar | UI shell, mock data |
-| AI Idea Vault | UI shell, mock data |
+| AI Idea Vault | Live (Postgres-backed CRUD) — capture ideas, turn any of them into a real script via the Script Assistant; no automatic Reddit/RSS/News collection |
 | Comment Manager | UI shell, mock data |
 | Sponsor Manager | UI shell, mock data |
 | Revenue Dashboard | UI shell, mock data |

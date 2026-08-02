@@ -119,6 +119,17 @@ export interface GrowthCoachAdvice {
   upload_timing_tip: string;
 }
 
+export const IDEA_SOURCES = [
+  "Note", "Voice Memo", "Reddit", "Trending Search", "Comment", "News", "RSS Feed", "Other",
+] as const;
+
+export interface Idea {
+  id: number;
+  source: string;
+  content: string;
+  created_at: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -151,6 +162,10 @@ export const api = {
     request<{ versions: PlatformVersion[] }>("/publishing/optimize", { method: "POST", body: JSON.stringify(data) }),
   getGrowthCoachAdvice: (data: { context: string }) =>
     request<GrowthCoachAdvice>("/growth-coach/advise", { method: "POST", body: JSON.stringify(data) }),
+  listIdeas: () => request<Idea[]>("/ideas"),
+  createIdea: (data: { source: string; content: string }) =>
+    request<Idea>("/ideas", { method: "POST", body: JSON.stringify(data) }),
+  deleteIdea: (id: number) => request<void>(`/ideas/${id}`, { method: "DELETE" }),
 };
 
 export { API_URL };
