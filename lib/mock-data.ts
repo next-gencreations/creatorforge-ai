@@ -32,14 +32,6 @@ export const calendarItems = [
   { date: "Aug 11", title: "Behind the Scenes", platform: "Instagram", status: "scheduled" },
 ];
 
-export const revenueStreams = [
-  { source: "YouTube Ad Revenue", amount: 4820, change: "+6%" },
-  { source: "Sponsorships", amount: 12800, change: "+18%" },
-  { source: "Merchandise", amount: 1340, change: "-4%" },
-  { source: "Affiliate Sales", amount: 960, change: "+2%" },
-  { source: "Patreon", amount: 2210, change: "+11%" },
-];
-
 export const brandKitAssets = {
   colors: ["#6C3BFF", "#0F0F14", "#F2F0FF", "#FFB020"],
   fonts: ["Inter", "Poppins"],

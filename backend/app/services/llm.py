@@ -492,3 +492,32 @@ def generate_sponsor_report(sponsors: list[dict], total_value: float) -> str:
         raise LLMRefusalError("The request was declined by content safety checks.")
 
     return "\n".join(block.text for block in response.content if block.type == "text").strip()
+
+
+REVENUE_REPORT_SYSTEM_PROMPT = (
+    "You are the AI Revenue Dashboard inside CreatorForge AI. Given a creator's real income "
+    "breakdown by source and a pre-computed total, write a short, clear financial summary — "
+    "which sources are contributing most, any notably small or missing streams, and one or "
+    "two practical observations a creator could act on. Use the exact figures given; never "
+    "invent, estimate, or round numbers beyond what's provided. If a stream has no income "
+    "recorded, say so plainly rather than guessing why."
+)
+
+
+def generate_revenue_report(streams: list[dict], total: float) -> str:
+    client = _get_client()
+    lines = [f"- {s['source']}: ${s['amount']:,.2f}" for s in streams]
+    user_text = f"Total income: ${total:,.2f}\n\nBreakdown by source:\n" + "\n".join(lines)
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=1024,
+        system=REVENUE_REPORT_SYSTEM_PROMPT,
+        output_config={"effort": "medium"},
+        messages=[{"role": "user", "content": user_text}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    return "\n".join(block.text for block in response.content if block.type == "text").strip()
