@@ -459,3 +459,36 @@ def moderate_comments(comments: list[str]) -> list[dict]:
     if len(results) != len(comments):
         raise RuntimeError("The model returned a different number of results than comments submitted.")
     return results
+
+
+SPONSOR_REPORT_SYSTEM_PROMPT = (
+    "You are the AI Sponsor Manager inside CreatorForge AI. Given a creator's current sponsor "
+    "deals (name, deliverable, deadline, amount, status) and a pre-computed total confirmed "
+    "value, write a clear, professional sponsorship report the creator could send to a manager "
+    "or keep for their own records. Summarise what's in progress, what's overdue or due soon, "
+    "and what's been paid. Use the exact numbers and dates given — never invent or round "
+    "figures. Keep it concise: a short overview paragraph followed by grouped bullet points."
+)
+
+
+def generate_sponsor_report(sponsors: list[dict], total_value: float) -> str:
+    client = _get_client()
+    lines = [
+        f"- {s['name']}: {s['deliverable']}, due {s['deadline'] or 'no deadline set'}, "
+        f"${s['amount']:,.2f}, status: {s['status']}"
+        for s in sponsors
+    ]
+    user_text = f"Total confirmed value across all deals: ${total_value:,.2f}\n\nDeals:\n" + "\n".join(lines)
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=1536,
+        system=SPONSOR_REPORT_SYSTEM_PROMPT,
+        output_config={"effort": "medium"},
+        messages=[{"role": "user", "content": user_text}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    return "\n".join(block.text for block in response.content if block.type == "text").strip()
