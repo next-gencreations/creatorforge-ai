@@ -32,13 +32,6 @@ export const calendarItems = [
   { date: "Aug 11", title: "Behind the Scenes", platform: "Instagram", status: "scheduled" },
 ];
 
-export const comments = [
-  { id: 1, platform: "YouTube", author: "@mikefilms", text: "This edit is insane, what software?!", sentiment: "positive" },
-  { id: 2, platform: "TikTok", author: "@sarah.codes", text: "Can you do a tutorial on the transitions?", sentiment: "positive" },
-  { id: 3, platform: "Instagram", author: "@spamacct213", text: "Check my page for free followers!!!", sentiment: "spam" },
-  { id: 4, platform: "YouTube", author: "@critic99", text: "Audio was a bit off in the middle section.", sentiment: "neutral" },
-];
-
 export const sponsors = [
   { id: 1, name: "NordVPN", deliverable: "60s integration", deadline: "Aug 8", amount: "$4,200", status: "in progress" },
   { id: 2, name: "Skillshare", deliverable: "Dedicated video", deadline: "Aug 22", amount: "$6,500", status: "contract sent" },

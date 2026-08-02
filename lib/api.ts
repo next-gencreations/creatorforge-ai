@@ -130,6 +130,12 @@ export interface Idea {
   created_at: string;
 }
 
+export interface CommentResult {
+  sentiment: "positive" | "neutral" | "negative";
+  is_spam: boolean;
+  suggested_reply: string | null;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -166,6 +172,8 @@ export const api = {
   createIdea: (data: { source: string; content: string }) =>
     request<Idea>("/ideas", { method: "POST", body: JSON.stringify(data) }),
   deleteIdea: (id: number) => request<void>(`/ideas/${id}`, { method: "DELETE" }),
+  moderateComments: (data: { comments: string[] }) =>
+    request<{ results: CommentResult[] }>("/comments/moderate", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };

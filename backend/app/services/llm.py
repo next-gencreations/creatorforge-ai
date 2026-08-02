@@ -402,3 +402,60 @@ def get_growth_coach_advice(context: str) -> dict:
 
     text = "".join(block.text for block in response.content if block.type == "text")
     return json.loads(text)
+
+
+COMMENTS_SYSTEM_PROMPT = (
+    "You are the AI Comment Manager inside CreatorForge AI. For each comment provided, "
+    "analyse its sentiment (positive, neutral, or negative), determine whether it looks like "
+    "spam or a scam (promotional links, crypto/followers scams, unrelated advertising, "
+    "bot-like phrasing), and — for genuine, non-spam comments only — draft a short, natural "
+    "reply in a warm, creator-appropriate voice a YouTuber might actually post (1-2 "
+    "sentences, no corporate tone). Set suggested_reply to null for anything flagged as spam. "
+    "Return exactly one result per input comment, in the same order given."
+)
+
+COMMENTS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "results": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sentiment": {"type": "string", "enum": ["positive", "neutral", "negative"]},
+                    "is_spam": {"type": "boolean"},
+                    "suggested_reply": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+                },
+                "required": ["sentiment", "is_spam", "suggested_reply"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    "required": ["results"],
+    "additionalProperties": False,
+}
+
+
+def moderate_comments(comments: list[str]) -> list[dict]:
+    client = _get_client()
+    numbered = "\n".join(f"{i + 1}. {c}" for i, c in enumerate(comments))
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=2048,
+        system=COMMENTS_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": COMMENTS_SCHEMA},
+        },
+        messages=[{"role": "user", "content": f"Comments:\n{numbered}"}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    results = json.loads(text)["results"]
+    if len(results) != len(comments):
+        raise RuntimeError("The model returned a different number of results than comments submitted.")
+    return results
