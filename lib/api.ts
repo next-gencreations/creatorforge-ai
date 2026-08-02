@@ -155,6 +155,31 @@ export interface SponsorReport {
   total_value: number;
 }
 
+export const INCOME_SOURCES = ["YouTube Ad Revenue", "Merchandise", "Affiliate Sales", "Patreon", "Donations", "Other"] as const;
+
+export interface IncomeEntry {
+  id: number;
+  source: string;
+  amount: number;
+  entry_date: string;
+  note: string | null;
+  created_at: string;
+}
+
+export interface RevenueStream {
+  source: string;
+  amount: number;
+}
+
+export interface RevenueSummary {
+  streams: RevenueStream[];
+  total: number;
+}
+
+export interface RevenueReport {
+  report: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -200,6 +225,12 @@ export const api = {
     request<Sponsor>(`/sponsors/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteSponsor: (id: number) => request<void>(`/sponsors/${id}`, { method: "DELETE" }),
   generateSponsorReport: () => request<SponsorReport>("/sponsors/report", { method: "POST" }),
+  listIncome: () => request<IncomeEntry[]>("/income"),
+  createIncome: (data: { source: string; amount: number; entry_date: string; note?: string }) =>
+    request<IncomeEntry>("/income", { method: "POST", body: JSON.stringify(data) }),
+  deleteIncome: (id: number) => request<void>(`/income/${id}`, { method: "DELETE" }),
+  getRevenueSummary: () => request<RevenueSummary>("/revenue/summary"),
+  generateRevenueReport: () => request<RevenueReport>("/revenue/report", { method: "POST" }),
 };
 
 export { API_URL };

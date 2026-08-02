@@ -8,8 +8,10 @@ from app.api.routes import (
     comments,
     growth_coach,
     ideas,
+    income,
     projects,
     publishing,
+    revenue,
     scripts,
     seo,
     sponsors,
@@ -18,7 +20,7 @@ from app.api.routes import (
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
-from app.models import idea, project, sponsor, user  # noqa: F401 — ensure models are registered before create_all
+from app.models import idea, income as income_model, project, sponsor, user  # noqa: F401 — ensure models are registered before create_all
 
 app = FastAPI(title="CreatorForge AI API", version="0.1.0")
 
@@ -53,3 +55,5 @@ app.include_router(growth_coach.router)
 app.include_router(ideas.router)
 app.include_router(comments.router)
 app.include_router(sponsors.router)
+app.include_router(income.router)
+app.include_router(revenue.router)
