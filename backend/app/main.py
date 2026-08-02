@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, captions, clips, projects, publishing, scripts, seo, thumbnails
+from app.api.routes import auth, captions, clips, growth_coach, projects, publishing, scripts, seo, thumbnails
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
@@ -36,3 +36,4 @@ app.include_router(seo.router)
 app.include_router(captions.router)
 app.include_router(clips.router)
 app.include_router(publishing.router)
+app.include_router(growth_coach.router)

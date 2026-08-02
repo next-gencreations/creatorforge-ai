@@ -18,29 +18,6 @@ export const uploadSchedule = [
   { day: "Sun", score: 47 },
 ];
 
-export const growthCoachTips = [
-  {
-    title: "Views dropped 8% this week",
-    detail: "Retention falls off sharply at 0:45 in your last 3 uploads. Consider tightening the hook.",
-    tag: "Retention",
-  },
-  {
-    title: "Trending topic in your niche",
-    detail: "\"AI editing workflows\" searches are up 34% this week — a video on this could ride the wave.",
-    tag: "Trend",
-  },
-  {
-    title: "Best upload window",
-    detail: "Your audience is most active Thursdays 5-7pm local time. Your last 2 uploads missed this window.",
-    tag: "Timing",
-  },
-  {
-    title: "Thumbnail contrast is low",
-    detail: "Your last thumbnail scored 6.2/10 on predicted CTR — competitors average 7.8/10 in this niche.",
-    tag: "Thumbnail",
-  },
-];
-
 export const scriptTemplates = [
   { id: 1, name: "Viral Hook Opener", description: "First 5 seconds designed to stop the scroll." },
   { id: 2, name: "Tutorial Structure", description: "Problem → demo → recap → CTA." },
