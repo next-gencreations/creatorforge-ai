@@ -136,6 +136,25 @@ export interface CommentResult {
   suggested_reply: string | null;
 }
 
+export const SPONSOR_STATUSES = ["Prospecting", "Contract sent", "In progress", "Delivered", "Paid"] as const;
+
+export interface Sponsor {
+  id: number;
+  name: string;
+  deliverable: string;
+  deadline: string | null;
+  amount: number;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SponsorReport {
+  report: string;
+  total_value: number;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -174,6 +193,13 @@ export const api = {
   deleteIdea: (id: number) => request<void>(`/ideas/${id}`, { method: "DELETE" }),
   moderateComments: (data: { comments: string[] }) =>
     request<{ results: CommentResult[] }>("/comments/moderate", { method: "POST", body: JSON.stringify(data) }),
+  listSponsors: () => request<Sponsor[]>("/sponsors"),
+  createSponsor: (data: { name: string; deliverable: string; deadline?: string; amount?: number; status?: string }) =>
+    request<Sponsor>("/sponsors", { method: "POST", body: JSON.stringify(data) }),
+  updateSponsor: (id: number, data: Partial<Pick<Sponsor, "status" | "amount" | "deadline">>) =>
+    request<Sponsor>(`/sponsors/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteSponsor: (id: number) => request<void>(`/sponsors/${id}`, { method: "DELETE" }),
+  generateSponsorReport: () => request<SponsorReport>("/sponsors/report", { method: "POST" }),
 };
 
 export { API_URL };

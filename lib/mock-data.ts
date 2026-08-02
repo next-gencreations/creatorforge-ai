@@ -32,12 +32,6 @@ export const calendarItems = [
   { date: "Aug 11", title: "Behind the Scenes", platform: "Instagram", status: "scheduled" },
 ];
 
-export const sponsors = [
-  { id: 1, name: "NordVPN", deliverable: "60s integration", deadline: "Aug 8", amount: "$4,200", status: "in progress" },
-  { id: 2, name: "Skillshare", deliverable: "Dedicated video", deadline: "Aug 22", amount: "$6,500", status: "contract sent" },
-  { id: 3, name: "Raycon", deliverable: "Shorts x3", deadline: "Sep 2", amount: "$2,100", status: "paid" },
-];
-
 export const revenueStreams = [
   { source: "YouTube Ad Revenue", amount: 4820, change: "+6%" },
   { source: "Sponsorships", amount: 12800, change: "+18%" },
