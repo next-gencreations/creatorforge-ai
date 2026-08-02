@@ -1,3 +1,4 @@
+import json
 from functools import lru_cache
 from typing import Literal
 
@@ -68,3 +69,58 @@ def generate_script_content(mode: ScriptMode, prompt: str, template: str | None 
         raise LLMRefusalError("The request was declined by content safety checks.")
 
     return "\n".join(block.text for block in response.content if block.type == "text").strip()
+
+
+THUMBNAIL_SYSTEM_PROMPT = (
+    "You are the AI Thumbnail Creator inside CreatorForge AI. Analyze the uploaded YouTube "
+    "thumbnail image the way an experienced YouTube strategist would: facial expression and "
+    "emotion, contrast and colour, text legibility at small sizes, composition, and how well "
+    "it would stand out in a crowded subscription feed. Give a ctr_score from 0-10 predicting "
+    "click-through-rate potential, a one-sentence score_rationale, 3-5 concrete feedback "
+    "bullets the creator can act on, and 3 alternative video titles that would pair well with "
+    "this thumbnail."
+)
+
+THUMBNAIL_ANALYSIS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "ctr_score": {"type": "number"},
+        "score_rationale": {"type": "string"},
+        "feedback": {"type": "array", "items": {"type": "string"}},
+        "title_suggestions": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["ctr_score", "score_rationale", "feedback", "title_suggestions"],
+    "additionalProperties": False,
+}
+
+
+def analyze_thumbnail(image_data: str, media_type: str, video_topic: str | None = None) -> dict:
+    client = _get_client()
+    user_text = "Analyze this thumbnail for click-through potential."
+    if video_topic:
+        user_text += f" The video is about: {video_topic}."
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=1024,
+        system=THUMBNAIL_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": THUMBNAIL_ANALYSIS_SCHEMA},
+        },
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": image_data}},
+                    {"type": "text", "text": user_text},
+                ],
+            }
+        ],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    return json.loads(text)

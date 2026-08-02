@@ -41,12 +41,6 @@ export const growthCoachTips = [
   },
 ];
 
-export const thumbnailVariants = [
-  { id: 1, label: "Variant A", ctr: 8.4, tags: ["High contrast", "Face reaction"] },
-  { id: 2, label: "Variant B", ctr: 6.9, tags: ["Text overlay", "Bold color"] },
-  { id: 3, label: "Variant C", ctr: 7.6, tags: ["Minimal", "Close-up"] },
-];
-
 export const scriptTemplates = [
   { id: 1, name: "Viral Hook Opener", description: "First 5 seconds designed to stop the scroll." },
   { id: 2, name: "Tutorial Structure", description: "Problem → demo → recap → CTA." },
