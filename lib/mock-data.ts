@@ -48,17 +48,6 @@ export const scriptTemplates = [
   { id: 4, name: "Sponsor Read", description: "Natural transition into a sponsor segment." },
 ];
 
-export const publishingPlatforms = [
-  { name: "YouTube", connected: true },
-  { name: "TikTok", connected: true },
-  { name: "Instagram", connected: false },
-  { name: "Facebook", connected: false },
-  { name: "X", connected: true },
-  { name: "LinkedIn", connected: false },
-  { name: "Pinterest", connected: false },
-  { name: "Twitch", connected: false },
-];
-
 export const calendarItems = [
   { date: "Aug 4", title: "Studio Tour Vlog", platform: "YouTube", status: "scheduled" },
   { date: "Aug 6", title: "Q&A Shorts Batch", platform: "Shorts", status: "draft" },

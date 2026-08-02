@@ -102,6 +102,16 @@ export interface ClipCandidate {
   score: number;
 }
 
+export const PUBLISHING_PLATFORMS = [
+  "YouTube", "TikTok", "Instagram", "Facebook", "X", "LinkedIn", "Pinterest", "Twitch",
+] as const;
+
+export interface PlatformVersion {
+  platform: string;
+  text: string;
+  notes: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -130,6 +140,8 @@ export const api = {
     request<CaptionResult>("/captions/generate", { method: "POST", body: JSON.stringify(data) }),
   generateClips: (data: { transcript: string }) =>
     request<{ clips: ClipCandidate[] }>("/clips/generate", { method: "POST", body: JSON.stringify(data) }),
+  optimizeForPlatforms: (data: { content: string; platforms: string[] }) =>
+    request<{ versions: PlatformVersion[] }>("/publishing/optimize", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };
