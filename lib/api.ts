@@ -64,6 +64,13 @@ export interface Project {
 
 export type ScriptMode = "script" | "hook" | "storytelling" | "cta";
 
+export interface ThumbnailAnalysis {
+  ctr_score: number;
+  score_rationale: string;
+  feedback: string[];
+  title_suggestions: string[];
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -84,6 +91,8 @@ export const api = {
   deleteProject: (id: number) => request<void>(`/projects/${id}`, { method: "DELETE" }),
   generateScript: (data: { mode: ScriptMode; prompt: string; template?: string }) =>
     request<{ content: string }>("/scripts/generate", { method: "POST", body: JSON.stringify(data) }),
+  analyzeThumbnail: (data: { image_data: string; media_type: string; video_topic?: string }) =>
+    request<ThumbnailAnalysis>("/thumbnails/analyze", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };
