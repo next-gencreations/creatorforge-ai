@@ -1,11 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, captions, clips, growth_coach, projects, publishing, scripts, seo, thumbnails
+from app.api.routes import (
+    auth,
+    captions,
+    clips,
+    comments,
+    growth_coach,
+    ideas,
+    projects,
+    publishing,
+    scripts,
+    seo,
+    thumbnails,
+)
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
-from app.models import project, user  # noqa: F401 — ensure models are registered before create_all
+from app.models import idea, project, user  # noqa: F401 — ensure models are registered before create_all
 
 app = FastAPI(title="CreatorForge AI API", version="0.1.0")
 
@@ -37,3 +49,5 @@ app.include_router(captions.router)
 app.include_router(clips.router)
 app.include_router(publishing.router)
 app.include_router(growth_coach.router)
+app.include_router(ideas.router)
+app.include_router(comments.router)
