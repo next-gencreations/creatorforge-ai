@@ -24,6 +24,8 @@ Starts Postgres and the API at `http://localhost:8000`. See [`backend/README.md`
 
 The AI Script Assistant, the AI Thumbnail Creator's CTR analysis, the AI SEO Engine, the AI Caption Generator, the AI Clip Generator, the AI Publishing Hub's format optimizer, the AI Growth Coach, the Comment Manager, the Sponsor Manager's report generator, the Revenue Dashboard's report generator, and the AI Video Editor's edit plan generator need a real Anthropic API key — set `ANTHROPIC_API_KEY` in `backend/.env` (or export it before `docker compose up`). Without it, those features return a 503; everything else works.
 
+The AI Audio Studio's voiceover generator uses [ElevenLabs](https://elevenlabs.io) instead — sign up, grab an API key from your account settings, and set `ELEVENLABS_API_KEY` in `backend/.env`. Without it, voiceover generation returns a 503.
+
 ### 2. Frontend
 
 ```bash
@@ -50,7 +52,7 @@ Visit `http://localhost:3000`, sign up, and you'll land in the dashboard.
 | Creator Dashboard / Analytics | UI shell, mock data |
 | AI Growth Coach | Live (Claude API) — tailored content ideas, priorities and diagnosis from what you tell it; no real analytics/trend data |
 | Brand Kit | UI shell, mock data |
-| AI Audio Studio | UI shell, mock data |
+| AI Audio Studio | Live AI voiceover generation (ElevenLabs text-to-speech), saved as real files in Cloud Storage; intro music, background beds, sound effects, and podcast mastering not yet available |
 | Content Calendar | UI shell, mock data |
 | AI Idea Vault | Live (Postgres-backed CRUD) — capture ideas, turn any of them into a real script via the Script Assistant; no automatic Reddit/RSS/News collection |
 | Comment Manager | Live (Claude API) — real sentiment/spam classification + AI reply drafts on pasted comments; no platform connections |

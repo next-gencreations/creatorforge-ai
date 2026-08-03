@@ -1,7 +1,6 @@
 import base64
 import binascii
 import os
-import uuid
 from collections import defaultdict
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -14,19 +13,9 @@ from app.db.session import get_db
 from app.models.storage_file import StorageFile
 from app.models.user import User
 from app.schemas.storage import MAX_UPLOAD_BYTES, FileOut, FileUploadRequest, FolderSummary, StorageSummary
+from app.services.storage import StorageQuotaExceeded, save_file
 
 router = APIRouter(prefix="/storage", tags=["storage"])
-
-
-def _user_dir(user_id: int) -> str:
-    path = os.path.join(settings.storage_root, str(user_id))
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-def _used_bytes(user_id: int, db: Session) -> int:
-    files = db.query(StorageFile).filter(StorageFile.owner_id == user_id).all()
-    return sum(f.size_bytes for f in files)
 
 
 @router.get("/summary", response_model=StorageSummary)
@@ -78,27 +67,17 @@ def upload_file(
     if len(raw_bytes) > MAX_UPLOAD_BYTES:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit")
 
-    used = _used_bytes(current_user.id, db)
-    if used + len(raw_bytes) > settings.storage_quota_bytes:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "This upload would exceed your storage quota")
-
-    disk_name = f"{uuid.uuid4().hex}_{data.filename}"
-    disk_path = os.path.join(_user_dir(current_user.id), disk_name)
-    with open(disk_path, "wb") as fh:
-        fh.write(raw_bytes)
-
-    record = StorageFile(
-        owner_id=current_user.id,
-        folder=data.folder.strip() or "Uncategorized",
-        filename=data.filename,
-        content_type=data.content_type,
-        size_bytes=len(raw_bytes),
-        storage_path=disk_path,
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-    return record
+    try:
+        return save_file(
+            current_user.id,
+            db,
+            filename=data.filename,
+            content_type=data.content_type,
+            folder=data.folder,
+            raw_bytes=raw_bytes,
+        )
+    except StorageQuotaExceeded as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from exc
 
 
 @router.get("/files/{file_id}/download")

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import (
+    audio,
     auth,
     captions,
     clips,
@@ -61,3 +62,4 @@ app.include_router(income.router)
 app.include_router(revenue.router)
 app.include_router(storage.router)
 app.include_router(editor.router)
+app.include_router(audio.router)

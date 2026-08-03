@@ -16,5 +16,8 @@ class Settings(BaseSettings):
     storage_root: str = "uploads"
     storage_quota_bytes: int = 5 * 1024 * 1024 * 1024
 
+    elevenlabs_api_key: str = ""
+    elevenlabs_model: str = "eleven_multilingual_v2"
+
 
 settings = Settings()

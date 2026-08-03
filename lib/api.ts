@@ -203,6 +203,8 @@ export interface StorageSummary {
   quota_bytes: number;
 }
 
+export const VOICE_CHOICES = ["Rachel", "Adam", "Bella", "Antoni"] as const;
+
 export interface CutSuggestion {
   timestamp_hint: string | null;
   reason: string;
@@ -281,13 +283,16 @@ export const api = {
     request<StorageFile>("/storage/files", { method: "POST", body: JSON.stringify(data) }),
   deleteStorageFile: (id: number) => request<void>(`/storage/files/${id}`, { method: "DELETE" }),
   getStorageSummary: () => request<StorageSummary>("/storage/summary"),
-  downloadStorageFile: async (id: number, filename: string) => {
+  fetchStorageFileBlob: async (id: number): Promise<Blob> => {
     const token = getToken();
     const res = await fetch(`${API_URL}/storage/files/${id}/download`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    if (!res.ok) throw new ApiError("Could not download this file.", res.status);
-    const blob = await res.blob();
+    if (!res.ok) throw new ApiError("Could not load this file.", res.status);
+    return res.blob();
+  },
+  downloadStorageFile: async (id: number, filename: string) => {
+    const blob = await api.fetchStorageFileBlob(id);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -297,6 +302,8 @@ export const api = {
   },
   generateEditPlan: (data: { footage_notes: string; platform_targets?: string[] }) =>
     request<EditPlan>("/editor/plan", { method: "POST", body: JSON.stringify(data) }),
+  generateVoiceover: (data: { script: string; voice?: string }) =>
+    request<StorageFile>("/audio/voiceover", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };

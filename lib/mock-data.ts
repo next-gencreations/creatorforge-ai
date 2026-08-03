@@ -38,10 +38,3 @@ export const brandKitAssets = {
   logos: ["primary-logo.svg", "watermark.svg"],
   templates: ["Intro v2", "Outro v1", "Sponsor Card"],
 };
-
-export const audioLibrary = [
-  { id: 1, name: "Upbeat Intro Loop", type: "Intro Music", duration: "0:12" },
-  { id: 2, name: "Ambient Background Bed", type: "Background Music", duration: "3:20" },
-  { id: 3, name: "Whoosh Transition", type: "Sound Effect", duration: "0:02" },
-  { id: 4, name: "Narrator Voiceover — Warm Male", type: "AI Voice", duration: "—" },
-];
