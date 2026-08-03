@@ -6,6 +6,7 @@ from app.api.routes import (
     captions,
     clips,
     comments,
+    editor,
     growth_coach,
     ideas,
     income,
@@ -59,3 +60,4 @@ app.include_router(sponsors.router)
 app.include_router(income.router)
 app.include_router(revenue.router)
 app.include_router(storage.router)
+app.include_router(editor.router)

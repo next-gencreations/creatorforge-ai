@@ -203,6 +203,28 @@ export interface StorageSummary {
   quota_bytes: number;
 }
 
+export interface CutSuggestion {
+  timestamp_hint: string | null;
+  reason: string;
+}
+
+export interface SceneStep {
+  label: string;
+  description: string;
+}
+
+export interface PlatformEditNote {
+  platform: string;
+  note: string;
+}
+
+export interface EditPlan {
+  cut_list: CutSuggestion[];
+  scene_plan: SceneStep[];
+  platform_notes: PlatformEditNote[];
+  overall_notes: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; full_name: string; channel_name?: string }) =>
     request<{ access_token: string; token_type: string }>("/auth/register", {
@@ -273,6 +295,8 @@ export const api = {
     a.click();
     URL.revokeObjectURL(url);
   },
+  generateEditPlan: (data: { footage_notes: string; platform_targets?: string[] }) =>
+    request<EditPlan>("/editor/plan", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export { API_URL };

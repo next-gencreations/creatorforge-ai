@@ -22,7 +22,7 @@ docker compose up --build
 
 Starts Postgres and the API at `http://localhost:8000`. See [`backend/README.md`](backend/README.md) for running without Docker.
 
-The AI Script Assistant, the AI Thumbnail Creator's CTR analysis, the AI SEO Engine, the AI Caption Generator, the AI Clip Generator, the AI Publishing Hub's format optimizer, the AI Growth Coach, the Comment Manager, the Sponsor Manager's report generator, and the Revenue Dashboard's report generator need a real Anthropic API key — set `ANTHROPIC_API_KEY` in `backend/.env` (or export it before `docker compose up`). Without it, those features return a 503; everything else works.
+The AI Script Assistant, the AI Thumbnail Creator's CTR analysis, the AI SEO Engine, the AI Caption Generator, the AI Clip Generator, the AI Publishing Hub's format optimizer, the AI Growth Coach, the Comment Manager, the Sponsor Manager's report generator, the Revenue Dashboard's report generator, and the AI Video Editor's edit plan generator need a real Anthropic API key — set `ANTHROPIC_API_KEY` in `backend/.env` (or export it before `docker compose up`). Without it, those features return a 503; everything else works.
 
 ### 2. Frontend
 
@@ -40,7 +40,7 @@ Visit `http://localhost:3000`, sign up, and you'll land in the dashboard.
 | --- | --- |
 | Auth & accounts | Live (FastAPI + Postgres + JWT) |
 | Project management | Live (create/list/update/delete via API) |
-| AI Video Editor | UI shell, pipeline not yet connected |
+| AI Video Editor | Real project CRUD; live Claude-generated edit plan (cut list, scene plan, platform notes) from a footage description or transcript — no actual video/audio processing (that would require real ffmpeg/computer-vision infrastructure, out of scope for an LLM call) |
 | AI Thumbnail Creator | Live CTR analysis (Claude vision) + title suggestions; image generation not yet built |
 | AI Script Assistant | Live (Claude API — script/hook/storytelling/CTA generation) |
 | AI SEO Engine | Live metadata generation (Claude API — title/description/tags/hashtags/chapters/keywords); no live trends or ranking data |
