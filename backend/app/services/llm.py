@@ -521,3 +521,93 @@ def generate_revenue_report(streams: list[dict], total: float) -> str:
         raise LLMRefusalError("The request was declined by content safety checks.")
 
     return "\n".join(block.text for block in response.content if block.type == "text").strip()
+
+
+EDITOR_SYSTEM_PROMPT = (
+    "You are the AI Video Editor inside CreatorForge AI. You do not see or process the actual "
+    "video or audio — you only have the creator's own written notes or transcript describing "
+    "their raw footage. From that, produce a practical edit plan a human editor can apply "
+    "themselves:\n"
+    "1. A cut list of moments to trim (silence, filler words, dead air, false starts, repeated "
+    "takes) — only ever pulled from timing markers already present in the notes (e.g. 'mm:ss' "
+    "or SRT-style cues); if no timing markers exist anywhere in the notes, set timestamp_hint to "
+    "null for every entry and never invent a timestamp.\n"
+    "2. A scene-by-scene structural plan — a short label and one-line description per beat, in "
+    "suggested viewing order, based only on what the notes actually describe.\n"
+    "3. Platform-specific formatting notes (aspect ratio, pacing, hook placement) — exactly one "
+    "entry per requested platform, or an empty list if no platforms were given.\n"
+    "4. One paragraph of overall editing guidance (pacing, tone, what to emphasize).\n"
+    "This is an AI-drafted plan for a human editor to apply, not an automated video edit — never "
+    "imply that frames were actually analyzed, cut, or rendered."
+)
+
+EDITOR_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "cut_list": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "timestamp_hint": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+                    "reason": {"type": "string"},
+                },
+                "required": ["timestamp_hint", "reason"],
+                "additionalProperties": False,
+            },
+        },
+        "scene_plan": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "label": {"type": "string"},
+                    "description": {"type": "string"},
+                },
+                "required": ["label", "description"],
+                "additionalProperties": False,
+            },
+        },
+        "platform_notes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "platform": {"type": "string"},
+                    "note": {"type": "string"},
+                },
+                "required": ["platform", "note"],
+                "additionalProperties": False,
+            },
+        },
+        "overall_notes": {"type": "string"},
+    },
+    "required": ["cut_list", "scene_plan", "platform_notes", "overall_notes"],
+    "additionalProperties": False,
+}
+
+
+def generate_edit_plan(footage_notes: str, platform_targets: list[str]) -> dict:
+    client = _get_client()
+    user_text = f"Footage notes / transcript:\n{footage_notes}"
+    if platform_targets:
+        user_text += f"\n\nTarget platforms: {', '.join(platform_targets)}."
+    else:
+        user_text += "\n\nNo specific target platforms were given — return an empty platform_notes list."
+
+    response = client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=3072,
+        system=EDITOR_SYSTEM_PROMPT,
+        output_config={
+            "effort": "medium",
+            "format": {"type": "json_schema", "schema": EDITOR_SCHEMA},
+        },
+        messages=[{"role": "user", "content": user_text}],
+    )
+
+    if response.stop_reason == "refusal":
+        raise LLMRefusalError("The request was declined by content safety checks.")
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    return json.loads(text)
