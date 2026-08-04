@@ -36,6 +36,16 @@ npm run dev
 
 Visit `http://localhost:3000`, sign up, and you'll land in the dashboard.
 
+## Deploying
+
+A [`render.yaml`](render.yaml) blueprint is included for deploying to [Render](https://render.com): Postgres, the FastAPI backend (built from `backend/Dockerfile`), and the Next.js frontend, all in one go.
+
+1. On the Render dashboard, choose **New → Blueprint** and point it at this repo/branch.
+2. Render provisions all three services and prompts you for the two secret env vars it won't auto-fill: `ANTHROPIC_API_KEY` and `ELEVENLABS_API_KEY`.
+3. Once deployed, the frontend is reachable at `https://creatorforge-frontend.onrender.com` (the backend URL is wired in via `NEXT_PUBLIC_API_URL`, and `CORS_ORIGINS` is pre-set to allow it).
+
+Two free-tier caveats worth knowing: Render's free Postgres databases expire after 30 days, and the `creatorforge-uploads` disk (used for Cloud Storage/Audio Studio files) requires a paid instance plan — free web services don't support persistent disks, so uploaded files won't survive a redeploy on the free plan.
+
 ## Feature areas
 
 | Area | Status |
