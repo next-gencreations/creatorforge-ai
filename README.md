@@ -44,7 +44,7 @@ A [`render.yaml`](render.yaml) blueprint is included for deploying to [Render](h
 2. Render provisions all three services and prompts you for the two secret env vars it won't auto-fill: `ANTHROPIC_API_KEY` and `ELEVENLABS_API_KEY`.
 3. Once deployed, the frontend is reachable at `https://creatorforge-frontend.onrender.com` (the backend URL is wired in via `NEXT_PUBLIC_API_URL`, and `CORS_ORIGINS` is pre-set to allow it).
 
-Two free-tier caveats worth knowing: Render's free Postgres databases expire after 30 days, and the `creatorforge-uploads` disk (used for Cloud Storage/Audio Studio files) requires a paid instance plan — free web services don't support persistent disks, so uploaded files won't survive a redeploy on the free plan.
+Two free-tier caveats worth knowing: Render's free Postgres databases expire after 30 days, and free web services don't support persistent disks — so Cloud Storage/Audio Studio uploads live on ephemeral local disk and are lost on redeploy or restart. To persist them, upgrade the backend service's plan and add a `disk:` block back into `render.yaml`.
 
 ## Feature areas
 

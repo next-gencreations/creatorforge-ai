@@ -28,10 +28,9 @@ services:
         sync: false
       - key: ELEVENLABS_MODEL
         value: eleven_multilingual_v2
-    disk:
-      name: creatorforge-uploads
-      mountPath: /app/uploads
-      sizeGB: 1
+    # Note: no persistent disk on the free plan — Cloud Storage/Audio Studio
+    # uploads live on ephemeral local disk and are lost on redeploy/restart.
+    # Upgrade this service's plan and add a `disk:` block to persist them.
 
   - type: web
     name: creatorforge-frontend
